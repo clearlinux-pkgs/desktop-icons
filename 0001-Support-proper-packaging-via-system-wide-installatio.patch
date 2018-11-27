@@ -1,0 +1,81 @@
+From f0b3a0c6b6482b0ab207c5a06c48a21336060bda Mon Sep 17 00:00:00 2001
+From: Ikey Doherty <ikey.doherty@intel.com>
+Date: Tue, 27 Nov 2018 14:15:13 +0000
+Subject: [PATCH] Support proper packaging via system-wide installation
+
+Correctly support a system wide installation via a new meson option but
+default to local installs for now. Additionally ensure that DESTDIR is
+respected for packaging.
+
+Signed-off-by: Ikey Doherty <ikey.doherty@intel.com>
+---
+ meson.build           | 12 +++++++++++-
+ meson_options.txt     |  1 +
+ meson_post_install.py | 11 ++++++++++-
+ 3 files changed, 22 insertions(+), 2 deletions(-)
+ create mode 100644 meson_options.txt
+
+diff --git a/meson.build b/meson.build
+index f9aaa2a..eefe04e 100644
+--- a/meson.build
++++ b/meson.build
+@@ -6,6 +6,16 @@ project('desktop-icons',
+ prefix = get_option('prefix')
+ schema_dir = join_paths(prefix, 'schemas')
+ 
++extension_dir = prefix
++with_system_wide = get_option('with-system-wide')
++
++# Handle a system-wide installation
++if with_system_wide == true
++    data_dir = join_paths(prefix, get_option('datadir'))
++    extension_dir = join_paths(data_dir, 'gnome-shell', 'extensions', 'desktop-icons@csoriano')
++    schema_dir = join_paths(data_dir, 'glib-2.0', 'schemas')
++endif
++
+ gnome = import ('gnome')
+ i18n = import('i18n')
+ 
+@@ -21,7 +31,7 @@ install_data([
+     'prefs.js',
+     'stylesheet.css'
+   ],
+-  install_dir: prefix
++  install_dir: extension_dir,
+ )
+ 
+ install_data(
+diff --git a/meson_options.txt b/meson_options.txt
+new file mode 100644
+index 0000000..05c811d
+--- /dev/null
++++ b/meson_options.txt
+@@ -0,0 +1 @@
++option('with-system-wide', type: 'boolean', description: 'Install this extension system wide', value: 'false')
+diff --git a/meson_post_install.py b/meson_post_install.py
+index d51a9a5..52dbb67 100644
+--- a/meson_post_install.py
++++ b/meson_post_install.py
+@@ -4,9 +4,18 @@ Meson custom install script
+ '''
+ 
+ import os
++import sys
+ from subprocess import call
+ 
++# No need to compile schemas if DESTDIR is set
++if 'DESTDIR' in os.environ:
++    sys.exit()
++
+ PREFIX = os.environ.get('MESON_INSTALL_PREFIX', os.getcwd())
+ 
+ print("Installing new Schemas")
+-call(['glib-compile-schemas', os.path.join(PREFIX, 'schemas/')])
++if os.geteuid() != 0:
++    call(['glib-compile-schemas', os.path.join(PREFIX, 'schemas/')])
++else:
++    call(['glib-compile-schemas', os.path.join(PREFIX, 'share', 'glib-2.0', 'schemas')])
++
+-- 
+2.19.2
+
