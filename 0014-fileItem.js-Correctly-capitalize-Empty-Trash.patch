@@ -1,0 +1,25 @@
+From d8f0f7721b6fe67a70ac859654912f0f62afda6b Mon Sep 17 00:00:00 2001
+From: Jeremy Bicha <jbicha@debian.org>
+Date: Wed, 28 Nov 2018 19:54:13 -0500
+Subject: [PATCH 14/55] fileItem.js: Correctly capitalize Empty Trash
+
+---
+ fileItem.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fileItem.js b/fileItem.js
+index 699a40b..dd16a1b 100644
+--- a/fileItem.js
++++ b/fileItem.js
+@@ -400,7 +400,7 @@ var FileItem = class {
+             break;
+         case Prefs.FILE_TYPE.USER_DIRECTORY_TRASH:
+             this._menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+-            this._menu.addAction(_('Empty trash'), () => this._onEmptyTrashClicked());
++            this._menu.addAction(_('Empty Trash'), () => this._onEmptyTrashClicked());
+             break;
+         default:
+             break;
+-- 
+2.20.0
+

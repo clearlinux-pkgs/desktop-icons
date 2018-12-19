@@ -1,0 +1,25 @@
+From 18c94d7c55586ce8bd1b3b7cdb956bcd856f6dbd Mon Sep 17 00:00:00 2001
+From: Feldwor <vaidas.boqsc@gmail.com>
+Date: Thu, 29 Nov 2018 09:21:32 +0000
+Subject: [PATCH 15/55] Update README.md
+
+---
+ README.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/README.md b/README.md
+index 791defd..a46aa4b 100644
+--- a/README.md
++++ b/README.md
+@@ -20,7 +20,7 @@ It's possible to read more information in the Meson docs to tweak the configurat
+ For a regular use and local development these are the steps to build the
+ project and install it:
+ ```
+-meson --prefix=~/.local/ .build
++meson --prefix=$HOME/.local/ .build
+ ninja -C .build install
+ ```
+ 
+-- 
+2.20.0
+

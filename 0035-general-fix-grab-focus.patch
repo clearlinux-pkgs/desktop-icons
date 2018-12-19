@@ -1,0 +1,52 @@
+From fc79021e67f8ec01d212a6583e71209b77d03a9a Mon Sep 17 00:00:00 2001
+From: Sergio Costas <raster@rastersoft.com>
+Date: Thu, 29 Nov 2018 21:22:20 +0100
+Subject: [PATCH 35/55] general: fix grab focus
+
+The grabbing of the focus in the desktop doesn't work, so hotkeys also
+fail. This is due to the grabHelper, that prevents the
+grab_key_focus() method to work.
+
+This patch forces grabbing the focus after releasing the grabHelper,
+ensuring that, when the user clicks on the desktop or selects a file,
+the focus is grabbed by the desktop. The focus is always set to the
+desktop 0 because it doesn't matter which one of all the desktops
+receive it, since all the key actions are done over the list of files
+stored in this._selection.
+---
+ desktopGrid.js    | 4 ++++
+ desktopManager.js | 3 +++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/desktopGrid.js b/desktopGrid.js
+index ffc42fc..239de12 100644
+--- a/desktopGrid.js
++++ b/desktopGrid.js
+@@ -118,6 +118,10 @@ var DesktopGrid = class {
+         this.reset();
+     }
+ 
++    grabFocus() {
++        this._grid.grab_key_focus();
++    }
++
+     _onKeyPress(actor, event) {
+         if (global.stage.get_key_focus() != actor)
+             return Clutter.EVENT_PROPAGATE;
+diff --git a/desktopManager.js b/desktopManager.js
+index ebfb8d7..c05895d 100644
+--- a/desktopManager.js
++++ b/desktopManager.js
+@@ -94,6 +94,9 @@ var DesktopManager = class {
+         Extension.lockActivitiesButton = true;
+         this._stageReleaseEventId = global.stage.connect('button-release-event', (actor, event) => {
+             this.endRubberBand();
++            /* Since none of the keyboard operations are managed in the grid itself, but are simply
++             * redirected to desktopManager, it is fine to always give the focus to the first grid */
++            this._desktopGrids[0].grabFocus();
+         });
+         this._rubberBandId = global.stage.connect('motion-event', (actor, event) => {
+             [x, y] = event.get_coords();
+-- 
+2.20.0
+

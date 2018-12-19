@@ -1,0 +1,65 @@
+From 03dbe606de3ba94581f5b7123e816a957bd068f5 Mon Sep 17 00:00:00 2001
+From: Sergio Costas <raster@rastersoft.com>
+Date: Sat, 24 Nov 2018 00:04:47 +0100
+Subject: [PATCH 12/55] desktopManager: Fix dragging folder into itself error
+
+When the user starts a DnD operation, and the destination folder is in
+the list of selected items to drag, the operation fails and gnome
+shell becomes unstable.
+
+This patch fixes this by removing any appearance of the destination
+folder in the list of the files/folders to move, and calling
+recreateDesktopIcons() instead of scheduleLayoutChildren().
+
+https://gitlab.gnome.org/World/ShellExtensions/desktop-icons/issues/48
+---
+ desktopManager.js | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/desktopManager.js b/desktopManager.js
+index 2b9c1da..f946e5b 100644
+--- a/desktopManager.js
++++ b/desktopManager.js
+@@ -424,30 +424,34 @@ var DesktopManager = class {
+         return true;
+     }
+ 
+-    selectionDropOnFileItem (fileItem) {
+-        if (!fileItem.isDirectory)
++    selectionDropOnFileItem (fileItemDestination) {
++        if (!fileItemDestination.isDirectory)
+             return false;
+ 
+         let droppedUris = [];
+         for (let fileItem of this._selection) {
+             if (fileItem.isSpecial)
+                 return false;
++            if (fileItemDestination.file.get_uri() == fileItem.file.get_uri())
++                continue;
+             droppedUris.push(fileItem.file.get_uri());
+         }
+ 
++        if (droppedUris.length == 0)
++            return true;
++
+         DBusUtils.NautilusFileOperationsProxy.MoveURIsRemote(droppedUris,
+-                                                             fileItem.file.get_uri(),
++                                                             fileItemDestination.file.get_uri(),
+             (result, error) => {
+                 if (error)
+                     throw new Error('Error moving files: ' + error.message);
+             }
+         );
+-
+         for (let fileItem of this._selection) {
+             fileItem.state = FileItem.State.GONE;
+         }
+ 
+-        this._scheduleReLayoutChildren();
++        this._recreateDesktopIcons();
+ 
+         return true;
+     }
+-- 
+2.20.0
+

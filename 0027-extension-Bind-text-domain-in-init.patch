@@ -1,0 +1,64 @@
+From 887416a388e20b039ecaa7f202163b146cc3f03d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Florian=20M=C3=BCllner?= <fmuellner@gnome.org>
+Date: Tue, 4 Dec 2018 15:23:25 +0100
+Subject: [PATCH 27/55] extension: Bind text domain in init()
+
+Setting the directory of message catalogues of a particular domain is
+only necessary once per process, so just do it once when initializing
+the extension.
+
+https://gitlab.gnome.org/World/ShellExtensions/desktop-icons/issues/66
+---
+ desktopGrid.js | 1 -
+ extension.js   | 3 +++
+ fileItem.js    | 1 -
+ 3 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/desktopGrid.js b/desktopGrid.js
+index 3e09df4..1e7f278 100644
+--- a/desktopGrid.js
++++ b/desktopGrid.js
+@@ -46,7 +46,6 @@ const CLIPBOARD_TYPE = St.ClipboardType.CLIPBOARD;
+ const Gettext = imports.gettext;
+ 
+ Gettext.textdomain('desktop-icons');
+-Gettext.bindtextdomain('desktop-icons', ExtensionUtils.getCurrentExtension().path + '/locale');
+ 
+ const _ = Gettext.gettext;
+ 
+diff --git a/extension.js b/extension.js
+index e20344d..944ab92 100644
+--- a/extension.js
++++ b/extension.js
+@@ -23,6 +23,7 @@ const Me = ExtensionUtils.getCurrentExtension();
+ const Prefs = Me.imports.prefs;
+ const { DesktopManager } = Me.imports.desktopManager;
+ const DBusUtils = Me.imports.dbusUtils;
++const Gettext = imports.gettext;
+ 
+ var desktopManager = null;
+ var addBackgroundMenuOrig = null;
+@@ -33,6 +34,8 @@ var oldShouldToggleByCornerOrButtonFunction = null;
+ 
+ function init() {
+     addBackgroundMenuOrig = Main.layoutManager._addBackgroundMenu;
++
++    Gettext.bindtextdomain('desktop-icons', Me.dir.get_child('locale'));
+ }
+ 
+ function newShouldToggleByCornerOrButton() {
+diff --git a/fileItem.js b/fileItem.js
+index 4f7e435..c45ffb3 100644
+--- a/fileItem.js
++++ b/fileItem.js
+@@ -45,7 +45,6 @@ const DesktopIconsUtil = Me.imports.desktopIconsUtil;
+ const Gettext = imports.gettext;
+ 
+ Gettext.textdomain('desktop-icons');
+-Gettext.bindtextdomain('desktop-icons', ExtensionUtils.getCurrentExtension().path + '/locale');
+ 
+ const _ = Gettext.gettext;
+ 
+-- 
+2.20.0
+

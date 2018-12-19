@@ -1,0 +1,51 @@
+From c1889140153ef72ec799d87b6b8d775af32a817b Mon Sep 17 00:00:00 2001
+From: Carlos Soriano <csoriano1618@gmail.com>
+Date: Sat, 24 Nov 2018 16:00:12 +0000
+Subject: [PATCH 07/55] README: Clarify contribution guidelines
+
+---
+ README.md | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/README.md b/README.md
+index 4592cad..0ed0a2e 100644
+--- a/README.md
++++ b/README.md
+@@ -3,23 +3,25 @@
+ A GNOME Shell extension for providing desktop icons.
+ 
+ # Requirements
+-* GNOME Shell >= 3.28
+-* Nautilus >= 3.30
++* GNOME Shell >= 3.30
++* Nautilus >= 3.30.4
+ 
+ ## How to contribute?
+ * Download the code
+ * Build with Meson (see at the next section)
+ * Activate the extension in GNOME Tweaks
+ 
+-## Build with meson
+-```
+-meson --prefix="${PREFIX}" "${BUILD_DIR}"
+-# With custom localedir
+-meson --prefix="${PREFIX}" --localedir=locale "${BUILD_DIR}"
++## Build with Meson
++The project uses a build system called [Meson](https://mesonbuild.com/). You can install
++in most Linux distributions as "meson".
+ 
+-ninja -C "${BUILD_DIR}" install
++Feel free to read more information there tweaking the configuration is needed.
++For the regular use and local development these are the steps to build the
++project and install:
++```
++meson --prefix=~/.local/share/gnome-shell/extensions/desktop-icons@csoriano .build
++ninja -C .build install
+ ```
+-The usual prefix to make it work locally would be ~/.local/share/gnome-shell/extensions/desktop-icons@csoriano
+ 
+ ### Export extension ZIP file for extensions.gnome.org
+ ```
+-- 
+2.20.0
+

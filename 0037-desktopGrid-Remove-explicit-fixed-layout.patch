@@ -1,0 +1,26 @@
+From 097ff301c7e523e82e406d206dfce5d0bc0c91ce Mon Sep 17 00:00:00 2001
+From: Carlos Soriano <csoriano@redhat.com>
+Date: Sun, 9 Dec 2018 23:37:52 +0100
+Subject: [PATCH 37/55] desktopGrid: Remove explicit fixed layout
+
+It's the default in St.Widget anyway.
+---
+ desktopGrid.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/desktopGrid.js b/desktopGrid.js
+index ffc42fc..ec5b2f3 100644
+--- a/desktopGrid.js
++++ b/desktopGrid.js
+@@ -75,7 +75,7 @@ var DesktopGrid = class {
+             row_homogeneous: true
+         });
+ 
+-        this.actor = new St.Widget({ layout_manager: new Clutter.FixedLayout() });
++        this.actor = new St.Widget();
+         this.actor._delegate = this;
+ 
+         this._grid = new St.Widget({
+-- 
+2.20.0
+

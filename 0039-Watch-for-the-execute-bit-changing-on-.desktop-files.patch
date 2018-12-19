@@ -1,0 +1,114 @@
+From 608c32aa231f91b6adce3366e054fd157315d760 Mon Sep 17 00:00:00 2001
+From: Iain Lane <iainl@gnome.org>
+Date: Fri, 23 Nov 2018 10:20:20 +0000
+Subject: [PATCH 39/55] Watch for the execute bit changing on .desktop files
+
+We should only ever show the name of the .desktop file if it is
+executable. That is:
+
+  - metadata::trusted true
+  - executable
+
+With this commit, we use a file monitor to watch for the attributes
+changing, and refresh the icon when they do. If the file goes +x or -x,
+we will update the icon accordingly (hiding or showing the display name
+from the desktop file).
+---
+ fileItem.js | 59 ++++++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 42 insertions(+), 17 deletions(-)
+
+diff --git a/fileItem.js b/fileItem.js
+index bf1c26c..a988c51 100644
+--- a/fileItem.js
++++ b/fileItem.js
+@@ -115,6 +115,19 @@ var FileItem = class {
+         /* Set the metadata and update relevant UI */
+         this._updateMetadataFromFileInfo(fileInfo);
+ 
++        if (this._isDesktopFile) {
++            /* watch for the executable bit being removed or added */
++            this._monitorDesktopFile = this._file.monitor_file(Gio.FileMonitorFlags.NONE, null);
++            this._monitorDesktopFileId = this._monitorDesktopFile.connect('changed',
++                (obj, file, otherFile, eventType) => {
++                    switch(eventType) {
++                        case Gio.FileMonitorEvent.ATTRIBUTE_CHANGED:
++                            this._refreshMetadataAsync(true);
++                            break;
++                    }
++                });
++        }
++
+         this._createMenu();
+         this._updateIcon();
+ 
+@@ -160,6 +173,10 @@ var FileItem = class {
+         if (this._loadThumbnailDataCancellable)
+             this._loadThumbnailDataCancellable.cancel();
+ 
++        /* Desktop file */
++        if (this._monitorDesktopFileId)
++            this._monitorDesktopFile.disconnect(this._monitorDesktopFileId);
++
+         /* Trash */
+         if (this._monitorTrashDir)
+             this._monitorTrashDir.disconnect(this._monitorTrashId);
+@@ -169,6 +186,30 @@ var FileItem = class {
+             GLib.source_remove(this._scheduleTrashRefreshId);
+     }
+ 
++    _refreshMetadataAsync(rebuild) {
++        if (this._queryFileInfoCancellable)
++            this._queryFileInfoCancellable.cancel();
++        this._queryFileInfoCancellable = new Gio.Cancellable();
++        this._file.query_info_async(DesktopIconsUtil.DEFAULT_ATTRIBUTES,
++                                    Gio.FileQueryInfoFlags.NONE,
++                                    GLib.PRIORITY_DEFAULT,
++                                    this._queryFileInfoCancellable,
++            (source, res) => {
++                try {
++                    let newFileInfo = source.query_info_finish(res);
++                    this._queryFileInfoCancellable = null;
++                    this._updateMetadataFromFileInfo(newFileInfo);
++                    if (rebuild) {
++                        this._createMenu();
++                        this._updateIcon();
++                    }
++                } catch(error) {
++                    if (!error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
++                        global.log("Error getting the file info: " + error);
++                }
++            });
++    }
++
+     _updateMetadataFromFileInfo(fileInfo) {
+         this._fileInfo = fileInfo;
+ 
+@@ -203,24 +244,8 @@ var FileItem = class {
+     }
+ 
+     onFileRenamed(file) {
+-        if (this._queryFileInfoCancellable)
+-            this._queryFileInfoCancellable.cancel();
+-        this._queryFileInfoCancellable = new Gio.Cancellable();
+         this._file = file;
+-        file.query_info_async(DesktopIconsUtil.DEFAULT_ATTRIBUTES,
+-                              Gio.FileQueryInfoFlags.NONE,
+-                              GLib.PRIORITY_DEFAULT,
+-                              this._queryFileInfoCancellable,
+-            (source, res) => {
+-                try {
+-                    let newFileInfo = source.query_info_finish(res);
+-                    this._queryFileInfoCancellable = null;
+-                    this._updateMetadataFromFileInfo(newFileInfo);
+-                } catch(error) {
+-                    if (!error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+-                        global.log("Error getting the file info: " + error);
+-                }
+-            });
++        this._refreshMetadataAsync(false);
+     }
+ 
+     _updateIcon() {
+-- 
+2.20.0
+

@@ -1,0 +1,65 @@
+From 95988990e2654eb1c6b4898085bdb2ba931daffe Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Florian=20M=C3=BCllner?= <fmuellner@gnome.org>
+Date: Tue, 4 Dec 2018 15:30:54 +0100
+Subject: [PATCH 28/55] extension: De-duplicate binding of text domain
+
+We still need to bind the text domain from both the extension and the
+preference dialog. Add a small helper function to share the code between
+both locations, so we don't have to duplicate future improvements.
+
+https://gitlab.gnome.org/World/ShellExtensions/desktop-icons/issues/66
+---
+ extension.js | 3 +--
+ prefs.js     | 8 +++++++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/extension.js b/extension.js
+index 944ab92..e5ca440 100644
+--- a/extension.js
++++ b/extension.js
+@@ -23,7 +23,6 @@ const Me = ExtensionUtils.getCurrentExtension();
+ const Prefs = Me.imports.prefs;
+ const { DesktopManager } = Me.imports.desktopManager;
+ const DBusUtils = Me.imports.dbusUtils;
+-const Gettext = imports.gettext;
+ 
+ var desktopManager = null;
+ var addBackgroundMenuOrig = null;
+@@ -35,7 +34,7 @@ var oldShouldToggleByCornerOrButtonFunction = null;
+ function init() {
+     addBackgroundMenuOrig = Main.layoutManager._addBackgroundMenu;
+ 
+-    Gettext.bindtextdomain('desktop-icons', Me.dir.get_child('locale'));
++    Prefs.initTranslations();
+ }
+ 
+ function newShouldToggleByCornerOrButton() {
+diff --git a/prefs.js b/prefs.js
+index 2979a5a..85a1128 100644
+--- a/prefs.js
++++ b/prefs.js
+@@ -25,7 +25,6 @@ const ExtensionUtils = imports.misc.extensionUtils;
+ const Gettext = imports.gettext;
+ 
+ Gettext.textdomain('desktop-icons');
+-Gettext.bindtextdomain('desktop-icons', ExtensionUtils.getCurrentExtension().path + '/locale');
+ 
+ var _ = Gettext.gettext;
+ 
+@@ -49,6 +48,13 @@ var settings;
+ // This is already in Nautilus settings, so it should not be made tweakable here
+ var CLICK_POLICY_SINGLE = false;
+ 
++function initTranslations() {
++    let extension = ExtensionUtils.getCurrentExtension();
++
++    let localedir = extension.dir.get_child('locale');
++    Gettext.bindtextdomain('desktop-icons', localedir.get_path());
++}
++
+ function init() {
+     let schemaSource = GioSSS.get_default();
+     let schemaGtk = schemaSource.lookup(SCHEMA_GTK, true);
+-- 
+2.20.0
+

@@ -1,0 +1,30 @@
+From e0397de2ee80915a4585665f0518b62fa4eac35e Mon Sep 17 00:00:00 2001
+From: Carlos Soriano <csoriano@redhat.com>
+Date: Wed, 5 Dec 2018 11:28:20 +0100
+Subject: [PATCH 31/55] fileItem: Separate initialization
+
+This is what I had in mind...
+---
+ fileItem.js | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/fileItem.js b/fileItem.js
+index bbe2587..2608896 100644
+--- a/fileItem.js
++++ b/fileItem.js
+@@ -65,11 +65,10 @@ var FileItem = class {
+ 
+         this._file = file;
+ 
++        this._savedCoordinates = null;
+         let savedCoordinates = fileInfo.get_attribute_as_string('metadata::nautilus-icon-position');
+         if (savedCoordinates != null)
+             this._savedCoordinates = savedCoordinates.split(',').map(x => Number(x));
+-        else
+-            this._savedCoordinates = null;
+ 
+         this._state = State.NORMAL;
+ 
+-- 
+2.20.0
+

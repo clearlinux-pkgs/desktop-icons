@@ -1,0 +1,153 @@
+From 7dba1fcc3a71695bfb6dffbe06ec68a680c90f70 Mon Sep 17 00:00:00 2001
+From: Iain Lane <iainl@gnome.org>
+Date: Fri, 23 Nov 2018 16:22:45 +0000
+Subject: [PATCH 09/55] build: Install files in the proper systemwide location
+
+When installing in the system, we need to put the extension in
+${prefix}/share/gnome-shell/extensions/<uuid>. Up until now we were just
+installing in ${prefix}.
+
+The schema compilation needs tweaking a bit, because we now install
+schemas in the proper location under the prefix and we shouldn't do this
+when building a package (DESTDIR in the environment, approach copied
+from Recipes). We do still need to have the export-zip.sh script call
+glib-compile-schemas for the zips we'll upload to extensions.gnome.org
+though - when the extension is loaded in this way it uses schemas from
+schemas/ within its own tree and nothing will compile them for us there.
+---
+ README.md             |  2 +-
+ export-zip.sh         |  8 +++++++-
+ meson.build           | 19 ++++++++++---------
+ meson_post_install.py | 16 ++++++++--------
+ schemas/meson.build   |  6 ++++++
+ 5 files changed, 32 insertions(+), 19 deletions(-)
+ create mode 100644 schemas/meson.build
+
+diff --git a/README.md b/README.md
+index 00324b6..791defd 100644
+--- a/README.md
++++ b/README.md
+@@ -20,7 +20,7 @@ It's possible to read more information in the Meson docs to tweak the configurat
+ For a regular use and local development these are the steps to build the
+ project and install it:
+ ```
+-meson --prefix=~/.local/share/gnome-shell/extensions/desktop-icons@csoriano .build
++meson --prefix=~/.local/ .build
+ ninja -C .build install
+ ```
+ 
+diff --git a/export-zip.sh b/export-zip.sh
+index d09bcf9..f82ceb3 100755
+--- a/export-zip.sh
++++ b/export-zip.sh
+@@ -6,12 +6,14 @@
+ # Usage:
+ # ./export-zip.sh - builds extension & create zip inside repository
+ 
++set -e
+ 
+ REPO_DIR="$(pwd)"
+ BUILD_DIR="${REPO_DIR}/builddir"
+ UUID="desktop-icons@csoriano"
+ LOCAL_PREFIX="${REPO_DIR}/${UUID}"
+-
++EXTENSIONS_DIR="${LOCAL_PREFIX}/share/gnome-shell/extensions/${UUID}"
++SCHEMADIR="${LOCAL_PREFIX}/share/glib-2.0/schemas"
+ 
+ # Check old builddir
+ if [ -d "${PWD}/${BUILD_DIR}" ]; then
+@@ -42,6 +44,10 @@ echo "# Create extension ZIP file"
+ echo "# --------------------------"
+ rm -rf "${REPO_DIR}/${UUID}.zip" "${LOCAL_PREFIX}/${UUID}.zip"
+ cd "${LOCAL_PREFIX}" || exit
++mkdir schemas
++cp "${SCHEMADIR}"/*.xml schemas/
++glib-compile-schemas schemas/
++cp -r "${EXTENSIONS_DIR}"/* .
+ zip -qr "${UUID}.zip" ./*.js ./*.css ./*.json ./locale ./schemas
+ mv -f "${UUID}.zip" "${REPO_DIR}/"
+ cd "${REPO_DIR}" || exit
+diff --git a/meson.build b/meson.build
+index f9aaa2a..16f6bfc 100644
+--- a/meson.build
++++ b/meson.build
+@@ -3,12 +3,15 @@ project('desktop-icons',
+   license: 'GPL3'
+ )
+ 
+-prefix = get_option('prefix')
+-schema_dir = join_paths(prefix, 'schemas')
+-
+ gnome = import ('gnome')
+ i18n = import('i18n')
+ 
++prefix = get_option('prefix')
++datadir = join_paths (prefix, get_option('datadir'))
++schema_dir = join_paths(datadir, 'glib-2.0', 'schemas')
++
++extensions_dir = join_paths(prefix, 'share', 'gnome-shell', 'extensions', 'desktop-icons@csoriano')
++
+ install_data([
+     'createThumbnail.js',
+     'dbusUtils.js',
+@@ -21,16 +24,14 @@ install_data([
+     'prefs.js',
+     'stylesheet.css'
+   ],
+-  install_dir: prefix
+-)
+-
+-install_data(
+-  'schemas/org.gnome.shell.extensions.desktop-icons.gschema.xml',
+-  install_dir : schema_dir
++  install_dir: extensions_dir
+ )
+ 
+ subdir(
+   'po'
+ )
++subdir(
++  'schemas'
++)
+ 
+ meson.add_install_script('meson_post_install.py')
+diff --git a/meson_post_install.py b/meson_post_install.py
+index d51a9a5..7b871c3 100644
+--- a/meson_post_install.py
++++ b/meson_post_install.py
+@@ -1,12 +1,12 @@
+-#!/usr/bin/env python3
+-'''
+-Meson custom install script
+-'''
++#!/usr/bin/python3
+ 
+ import os
+-from subprocess import call
++import subprocess
+ 
+-PREFIX = os.environ.get('MESON_INSTALL_PREFIX', os.getcwd())
++prefix = os.environ['MESON_INSTALL_DESTDIR_PREFIX']
++schemadir = os.path.join(prefix, 'share', 'glib-2.0', 'schemas')
+ 
+-print("Installing new Schemas")
+-call(['glib-compile-schemas', os.path.join(PREFIX, 'schemas/')])
++# Packaging tools define DESTDIR and this isn't needed for them
++if 'DESTDIR' not in os.environ:
++    print('Compiling GSettings schemas...')
++    subprocess.call(['glib-compile-schemas', schemadir])
+diff --git a/schemas/meson.build b/schemas/meson.build
+new file mode 100644
+index 0000000..2b17916
+--- /dev/null
++++ b/schemas/meson.build
+@@ -0,0 +1,6 @@
++gnome.compile_schemas()
++
++install_data(
++  'org.gnome.shell.extensions.desktop-icons.gschema.xml',
++  install_dir : schema_dir
++)
+-- 
+2.20.0
+

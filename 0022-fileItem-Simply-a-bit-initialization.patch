@@ -1,0 +1,39 @@
+From a85345148dd6241f7d3287fdc6e2a663e743c2f4 Mon Sep 17 00:00:00 2001
+From: Carlos Soriano <csoriano@redhat.com>
+Date: Fri, 30 Nov 2018 15:55:29 +0100
+Subject: [PATCH 22/55] fileItem: Simply a bit initialization
+
+---
+ fileItem.js | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/fileItem.js b/fileItem.js
+index 1fd6fbc..ff060fa 100644
+--- a/fileItem.js
++++ b/fileItem.js
+@@ -66,20 +66,17 @@ var FileItem = class {
+         this._queryFileInfoCancellable = null;
+         this._isSpecial = this._fileExtra != Prefs.FILE_TYPE.NONE;
+ 
+-        let scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+-
+         this._file = file;
+-        let savedCoordinates = fileInfo.get_attribute_as_string('metadata::nautilus-icon-position');
+ 
++        let savedCoordinates = fileInfo.get_attribute_as_string('metadata::nautilus-icon-position');
+         if (savedCoordinates != null)
+             this._savedCoordinates = savedCoordinates.split(',').map(x => Number(x));
+-        else
+-            this._savedCoordinates = null;
+ 
+         this._state = State.NORMAL;
+ 
+         this.actor = new St.Bin({ visible: true });
+         this.actor.set_fill(true, true);
++        let scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+         this.actor.set_height(Prefs.get_desired_height(scaleFactor));
+         this.actor.set_width(Prefs.get_desired_width(scaleFactor));
+         this.actor._delegate = this;
+-- 
+2.20.0
+

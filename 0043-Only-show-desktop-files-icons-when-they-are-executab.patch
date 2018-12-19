@@ -1,0 +1,27 @@
+From a7db01692d5a24fbd905ccd433c187eb93c24e02 Mon Sep 17 00:00:00 2001
+From: Iain Lane <iainl@gnome.org>
+Date: Wed, 28 Nov 2018 17:34:02 +0000
+Subject: [PATCH 43/55] Only show desktop files' icons when they are executable
+
+At the minute we show their icon always, which is misleading when we're
+treating them effectively as text files.
+---
+ fileItem.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fileItem.js b/fileItem.js
+index f2c1210..e86536b 100644
+--- a/fileItem.js
++++ b/fileItem.js
+@@ -331,7 +331,7 @@ var FileItem = class {
+         if (this._isBrokenSymlink) {
+             this._icon.child = this._createEmblemedStIcon(null, 'text-x-generic');
+         } else {
+-            if (this._isDesktopFile && this._desktopFile.has_key('Icon'))
++            if (this.trustedDesktopFile && this._desktopFile.has_key('Icon'))
+                 this._icon.child = this._createEmblemedStIcon(null, this._desktopFile.get_string('Icon'));
+             else
+                 this._icon.child = this._createEmblemedStIcon(this._fileInfo.get_icon(), null);
+-- 
+2.20.0
+

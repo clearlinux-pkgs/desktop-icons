@@ -1,0 +1,24 @@
+From ca5907f415fc75ec050e9124cc16143f7284e1e5 Mon Sep 17 00:00:00 2001
+From: Carlos Soriano <csoriano@redhat.com>
+Date: Fri, 30 Nov 2018 14:18:27 +0100
+Subject: [PATCH 19/55] desktopManager: Remove spurious new line
+
+---
+ desktopManager.js | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/desktopManager.js b/desktopManager.js
+index 748f0f3..ada557a 100644
+--- a/desktopManager.js
++++ b/desktopManager.js
+@@ -269,7 +269,6 @@ var DesktopManager = class {
+ 
+         // Only get a subset of events we are interested in.
+         // Note that CREATED will emit a CHANGES_DONE_HINT
+-
+         if (![DELETED, MOVED_IN, MOVED_OUT, CREATED].includes(eventType))
+             return;
+ 
+-- 
+2.20.0
+

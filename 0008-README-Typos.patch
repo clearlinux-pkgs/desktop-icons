@@ -1,0 +1,30 @@
+From c51f5c4365e9093f366cd6222c9756d85e4cf60c Mon Sep 17 00:00:00 2001
+From: Carlos Soriano <csoriano1618@gmail.com>
+Date: Sat, 24 Nov 2018 16:01:28 +0000
+Subject: [PATCH 08/55] README: Typos
+
+---
+ README.md | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/README.md b/README.md
+index 0ed0a2e..00324b6 100644
+--- a/README.md
++++ b/README.md
+@@ -15,9 +15,10 @@ A GNOME Shell extension for providing desktop icons.
+ The project uses a build system called [Meson](https://mesonbuild.com/). You can install
+ in most Linux distributions as "meson".
+ 
+-Feel free to read more information there tweaking the configuration is needed.
+-For the regular use and local development these are the steps to build the
+-project and install:
++It's possible to read more information in the Meson docs to tweak the configuration if needed.
++
++For a regular use and local development these are the steps to build the
++project and install it:
+ ```
+ meson --prefix=~/.local/share/gnome-shell/extensions/desktop-icons@csoriano .build
+ ninja -C .build install
+-- 
+2.20.0
+

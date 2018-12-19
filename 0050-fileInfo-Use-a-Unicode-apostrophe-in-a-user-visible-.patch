@@ -1,0 +1,27 @@
+From 1797829ea51058d9a98288349da3cf0816ad1dd6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Piotr=20Dr=C4=85g?= <piotrdrag@gmail.com>
+Date: Thu, 13 Dec 2018 18:26:46 +0100
+Subject: [PATCH 50/55] fileInfo: Use a Unicode apostrophe in a user-visible
+ string
+
+See https://developer.gnome.org/hig/stable/typography.html
+---
+ fileItem.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fileItem.js b/fileItem.js
+index d42ba2d..9fd6fc8 100644
+--- a/fileItem.js
++++ b/fileItem.js
+@@ -482,7 +482,7 @@ var FileItem = class {
+ 
+     get _allowLaunchingText() {
+         if (this.trustedDesktopFile)
+-            return _("Don't Allow Launching");
++            return _("Don’t Allow Launching");
+ 
+         return _("Allow Launching");
+     }
+-- 
+2.20.0
+
