@@ -4,7 +4,7 @@
 #
 Name     : desktop-icons
 Version  : 18.11rc
-Release  : 2
+Release  : 3
 URL      : https://gitlab.gnome.org/World/ShellExtensions/desktop-icons/-/archive/18.11rc/desktop-icons-18.11rc.tar.gz
 Source0  : https://gitlab.gnome.org/World/ShellExtensions/desktop-icons/-/archive/18.11rc/desktop-icons-18.11rc.tar.gz
 Summary  : No detailed summary available
@@ -15,7 +15,60 @@ Requires: desktop-icons-license = %{version}-%{release}
 Requires: desktop-icons-locales = %{version}-%{release}
 BuildRequires : buildreq-gnome
 BuildRequires : buildreq-meson
-Patch1: 0001-Support-proper-packaging-via-system-wide-installatio.patch
+Patch1: 0001-Update-Polish-translation.patch
+Patch2: 0002-Update-Brazilian-Portuguese-translation.patch
+Patch3: 0003-Fix-non-translatable-strings-between-double-quotes.patch
+Patch4: 0004-Add-Russian-translation.patch
+Patch5: 0006-README-Update-contribution-workflow.patch
+Patch6: 0007-README-Clarify-contribution-guidelines.patch
+Patch7: 0008-README-Typos.patch
+Patch8: 0009-build-Install-files-in-the-proper-systemwide-locatio.patch
+Patch9: 0010-FileItem.js-fix-access-to-destroyed-trash-icon.patch
+Patch10: 0011-FileItem.js-fix-missing-semicolon.patch
+Patch11: 0012-desktopManager-Fix-dragging-folder-into-itself-error.patch
+Patch12: 0013-general-Hide-the-hidden-files-when-needed.patch
+Patch13: 0014-fileItem.js-Correctly-capitalize-Empty-Trash.patch
+Patch14: 0015-Update-README.md.patch
+Patch15: 0016-Update-Spanish-translation.patch
+Patch16: 0017-general-Rename-files-instead-of-refreshing-desktop.patch
+Patch17: 0018-fileItem-Use-similar-function-wording-as-signals-for.patch
+Patch18: 0019-desktopManager-Remove-spurious-new-line.patch
+Patch19: 0020-fileItem-Make-sure-UI-is-updated-when-metadata-is-up.patch
+Patch20: 0021-fileItem-Reorder-initialization-so-UI-is-created-bef.patch
+Patch21: 0022-fileItem-Simply-a-bit-initialization.patch
+Patch22: 0023-fileItem.js-fix-undefined-property-error.patch
+Patch23: 0024-Update-Polish-translation.patch
+Patch24: 0025-Update-Brazilian-Portuguese-translation.patch
+Patch25: 0026-Add-French-translation.patch
+Patch26: 0027-extension-Bind-text-domain-in-init.patch
+Patch27: 0028-extension-De-duplicate-binding-of-text-domain.patch
+Patch28: 0029-prefs-Handle-translations-when-installed-system-wide.patch
+Patch29: 0030-gettext-Only-use-domain-for-our-own-translations.patch
+Patch30: 0031-fileItem-Separate-initialization.patch
+Patch31: 0032-Add-Italian-translation.patch
+Patch32: 0033-fileItem.js-Shows-broken-symlinks-with-an-emblem.patch
+Patch33: 0034-desktopManager.js-Don-t-allow-to-delete-special-file.patch
+Patch34: 0035-general-fix-grab-focus.patch
+Patch35: 0036-Revert-general-fix-grab-focus.patch
+Patch36: 0037-desktopGrid-Remove-explicit-fixed-layout.patch
+Patch37: 0038-Show-the-display-name-of-launchable-desktop-files.patch
+Patch38: 0039-Watch-for-the-execute-bit-changing-on-.desktop-files.patch
+Patch39: 0040-Show-the-link-emblem-when-a-desktop-file-is-executab.patch
+Patch40: 0041-Only-execute-fully-executable-desktop-files.patch
+Patch41: 0042-Add-a-context-menu-for-desktop-files-to-mark-them-un.patch
+Patch42: 0043-Only-show-desktop-files-icons-when-they-are-executab.patch
+Patch43: 0044-desktopManager-fileItem-Don-t-launch-if-desktop-or-f.patch
+Patch44: 0045-fileInfo-If-we-can-t-read-a-desktop-file-treat-it-li.patch
+Patch45: 0046-desktopGrid-Constrain-grid-to-workarea.patch
+Patch46: 0047-desktopGrid-Don-t-fill-grid-with-placeholder-on-init.patch
+Patch47: 0048-desktopManager-Remove-items-from-the-grid-in-an-idle.patch
+Patch48: 0049-desktopGrid-Use-the-allocation-to-perform-calculatio.patch
+Patch49: 0050-fileInfo-Use-a-Unicode-apostrophe-in-a-user-visible-.patch
+Patch50: 0051-desktopGrid-Fix-spelling-of-OK-in-a-user-visible-str.patch
+Patch51: 0052-Update-Polish-translation.patch
+Patch52: 0053-desktopManager.js-fix-typo-in-destroy-deleteChildren.patch
+Patch53: 0054-desktopGrid.js-Use-Unicode-apostrophe.patch
+Patch54: 0055-Update-Brazilian-Portuguese-translation.patch
 
 %description
 # Desktop Icons
@@ -49,14 +102,67 @@ locales components for the desktop-icons package.
 %prep
 %setup -q -n desktop-icons-18.11rc
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
+%patch35 -p1
+%patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%patch40 -p1
+%patch41 -p1
+%patch42 -p1
+%patch43 -p1
+%patch44 -p1
+%patch45 -p1
+%patch46 -p1
+%patch47 -p1
+%patch48 -p1
+%patch49 -p1
+%patch50 -p1
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1543328843
-CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" meson --prefix /usr --buildtype=plain -Dwith-system-wide=true  builddir
+export SOURCE_DATE_EPOCH=1545219200
+CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" meson --prefix /usr --buildtype=plain   builddir
 ninja -v -C builddir
 
 %install
