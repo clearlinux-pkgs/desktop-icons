@@ -1,5 +1,5 @@
 PKG_NAME := desktop-icons
-URL = https://gitlab.gnome.org/World/ShellExtensions/desktop-icons/-/archive/18.11rc/desktop-icons-18.11rc.tar.gz
+URL = https://gitlab.gnome.org/World/ShellExtensions/desktop-icons/-/archive/19.01/desktop-icons-19.01.tar.gz
 ARCHIVES = 
 
 include ../common/Makefile.common
