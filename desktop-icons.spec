@@ -4,7 +4,7 @@
 #
 Name     : desktop-icons
 Version  : 19.01.4
-Release  : 8
+Release  : 10
 URL      : https://gitlab.gnome.org/World/ShellExtensions/desktop-icons/-/archive/19.01.4/desktop-icons-19.01.4.tar.gz
 Source0  : https://gitlab.gnome.org/World/ShellExtensions/desktop-icons/-/archive/19.01.4/desktop-icons-19.01.4.tar.gz
 Summary  : No detailed summary available
@@ -15,6 +15,7 @@ Requires: desktop-icons-license = %{version}-%{release}
 Requires: desktop-icons-locales = %{version}-%{release}
 BuildRequires : buildreq-gnome
 BuildRequires : buildreq-meson
+Patch1: 0001-support-3-34.patch
 
 %description
 # Desktop Icons
@@ -47,13 +48,14 @@ locales components for the desktop-icons package.
 
 %prep
 %setup -q -n desktop-icons-19.01.4
+%patch1 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1567484083
+export SOURCE_DATE_EPOCH=1568236556
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -fno-lto "
 export FCFLAGS="$CFLAGS -fno-lto "
